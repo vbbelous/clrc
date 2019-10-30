@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.belous.v.clrc_old.MainActivity">
+
+    <item
+        android:id="@+id/search"
+        android:icon="@mipmap/search"
+        android:orderInCategory="0"
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="1"
+        android:title="@string/settings"
+        app:showAsAction="never|withText" />
+
+    <item
+        android:id="@+id/exit"
+        android:orderInCategory="2"
+        android:title="@string/exit"
+        app:showAsAction="never" />
+
+</menu>

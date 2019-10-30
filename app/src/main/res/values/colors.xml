@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="action_bar_background">#E5E5E5</color>
+    <color name="heavy">#2A323A</color>
+    <color name="wallet_text">#DF691A</color>
+
+    <color name="main_text">#747474</color>
+    <color name="text">#505051</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dark_grey">#747474</color>
+    <color name="grey">#EEEEEE</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#1B8A20</color>
+</resources>

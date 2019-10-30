@@ -1,0 +1,18 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    </style>
+
+    <style name="ListViewStyle" parent="Widget.AppCompat.ListView">
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:dividerHeight">2dp</item>
+    </style>
+
+    <style name="CardViewStyle" parent="Theme.AppCompat.Light">
+        <item name="cardCornerRadius">3dp</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="cardBackgroundColor">@color/grey</item>
+    </style>
+
+</resources>
