@@ -9,4 +9,4 @@ Universal application to control your ceiling light through the wifi network.
 Checked work:
 - Yeelight
 
-<img src="https://github.com/vbbelous/clrc/blob/master/img_1.jpeg"/> <img src="https://github.com/vbbelous/clrc/blob/master/img_2.jpeg"/>
+<img src="https://github.com/vbbelous/clrc/blob/master/img_1.JPEG"/> <img src="https://github.com/vbbelous/clrc/blob/master/img_2.JPEG"/>
