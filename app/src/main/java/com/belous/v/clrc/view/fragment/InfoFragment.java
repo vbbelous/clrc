@@ -12,10 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.belous.v.clrc.App;
 import com.belous.v.clrc.R;
 import com.belous.v.clrc.model.Item;
 import com.belous.v.clrc.other.ProgressModel;
-import com.belous.v.clrc.other.di.App;
 import com.belous.v.clrc.presenter.InfoPresenter;
 
 import javax.inject.Inject;
@@ -58,7 +58,7 @@ public class InfoFragment extends BaseFragment implements InfoView, SwipeRefresh
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.info_fragment, container, false);
-        App.getAppComponent().inject(this);
+        App.appComponent.inject(this);
         ButterKnife.bind(this, view);
         swipeRefreshLayout.setOnRefreshListener(this);
         return view;

@@ -7,9 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.belous.v.clrc.App;
 import com.belous.v.clrc.model.Item;
-import com.belous.v.clrc.model.db.ItemDao;
-import com.belous.v.clrc.other.di.App;
 import com.belous.v.clrc.presenter.ListPresenter;
 
 import javax.inject.Inject;
@@ -41,7 +40,7 @@ public abstract class BaseDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = getContext();
-        App.getAppComponent().inject(this);
+        App.appComponent.inject(this);
     }
 
     @Override

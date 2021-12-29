@@ -19,10 +19,10 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.belous.v.clrc.App;
 import com.belous.v.clrc.R;
 import com.belous.v.clrc.model.Item;
 import com.belous.v.clrc.other.ProgressModel;
-import com.belous.v.clrc.other.di.App;
 import com.belous.v.clrc.presenter.ListPresenter;
 import com.belous.v.clrc.view.SettingsActivity;
 import com.belous.v.clrc.view.adapter.ItemsAdapter;
@@ -54,7 +54,7 @@ public class ListFragment extends BaseFragment implements ListView, SwipeRefresh
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_fragment, container, false);
 
-        App.getAppComponent().inject(this);
+        App.appComponent.inject(this);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle("");

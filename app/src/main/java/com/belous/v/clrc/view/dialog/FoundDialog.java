@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -14,9 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.belous.v.clrc.App;
 import com.belous.v.clrc.R;
 import com.belous.v.clrc.model.Item;
-import com.belous.v.clrc.other.di.App;
 import com.belous.v.clrc.presenter.ListPresenter;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class FoundDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
-        App.getAppComponent().inject(this);
+        App.appComponent.inject(this);
     }
 
     @Override
