@@ -15,7 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.belous.v.clrc.App;
 import com.belous.v.clrc.R;
 import com.belous.v.clrc.model.Item;
-import com.belous.v.clrc.other.ProgressModel;
+import com.belous.v.clrc.main.MainViewModel;
 import com.belous.v.clrc.presenter.InfoPresenter;
 
 import javax.inject.Inject;
@@ -71,7 +71,7 @@ public class InfoFragment extends BaseFragment implements InfoView, SwipeRefresh
         Bundle bundle = getArguments();
         if (bundle != null) {
             long itemId = bundle.getLong(ITEM_ID);
-            infoPresenter.onStart(this, itemId, ViewModelProviders.of(getActivity()).get(ProgressModel.class).getShowProgress());
+            infoPresenter.onStart(this, itemId, ViewModelProviders.of(getActivity()).get(MainViewModel.class).getShowProgress());
         }
     }
 

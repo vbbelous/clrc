@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.belous.v.clrc.main.MainActivity;
 import com.belous.v.clrc.R;
-import com.belous.v.clrc.view.SettingsActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,11 +53,11 @@ public class RateDialog extends DialogFragment {
                             Uri.parse("http://play.google.com/store/apps/details?id=" + activity.getPackageName())));
                 }
             case R.id.close_button:
-                editor.putBoolean(SettingsActivity.IS_VOTED, true);
+                editor.putBoolean(MainActivity.IS_VOTED, true);
                 editor.apply();
                 break;
             case R.id.later_button:
-                editor.putLong(SettingsActivity.DAY_INSTALLATION, System.currentTimeMillis() + 259200000L);
+                editor.putLong(MainActivity.DAY_INSTALLATION, System.currentTimeMillis() + 259200000L);
                 editor.apply();
                 break;
         }

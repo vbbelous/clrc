@@ -1,16 +1,12 @@
-package com.belous.v.clrc.other;
+package com.belous.v.clrc.main
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
-public class ProgressModel extends ViewModel {
+class MainViewModel : ViewModel() {
 
-    private MutableLiveData<Boolean> showProgress;
-
-    public MutableLiveData<Boolean> getShowProgress() {
-        if (showProgress == null) {
-            showProgress = new MutableLiveData<>();
-        }
-        return showProgress;
-    }
+    private val _showProgress = MutableLiveData(false)
+    val showProgress: LiveData<Boolean>
+        get() = _showProgress
 }

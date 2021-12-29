@@ -1,64 +1,63 @@
-package com.belous.v.clrc;
+package com.belous.v.clrc.main
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.preference.PreferenceManager
+import com.belous.v.clrc.R
+import com.belous.v.clrc.view.dialog.ProgressDialog
+import com.belous.v.clrc.view.dialog.RateDialog
+import com.belous.v.clrc.view.fragment.ListFragment
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.preference.PreferenceManager;
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-import com.belous.v.clrc.other.ProgressModel;
-import com.belous.v.clrc.view.SettingsActivity;
-import com.belous.v.clrc.view.dialog.ProgressDialog;
-import com.belous.v.clrc.view.dialog.RateDialog;
-import com.belous.v.clrc.view.fragment.ListFragment;
-import com.belous.v.clrc.view.fragment.ListView;
+    companion object {
+        const val IS_VOTED = "IS_VOTED"
+        const val DAY_INSTALLATION = "DAY_INSTALLATION"
+    }
 
-public class MainActivity extends AppCompatActivity {
+    private val viewModel by viewModels<MainViewModel>()
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        showRateDialog(fragmentManager);
-        initProgressDialog();
+        val fragmentManager = supportFragmentManager
+        showRateDialog(fragmentManager)
+        initProgressDialog()
 
         if (savedInstanceState == null) {
-            fragmentManager
-                    .beginTransaction()
-                    .add(R.id.main_layout, new ListFragment(), ListView.class.getSimpleName())
-                    .commit();
+            fragmentManager.commit {
+                add<ListFragment>(R.id.main_layout)
+            }
         }
     }
 
-    private void showRateDialog(FragmentManager fragmentManager) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (!sharedPreferences.contains(SettingsActivity.IS_VOTED)) {
-            if (sharedPreferences.contains(SettingsActivity.DAY_INSTALLATION)) {
-                if (sharedPreferences.getLong(SettingsActivity.DAY_INSTALLATION, 0) < System.currentTimeMillis()) {
-                    new RateDialog(sharedPreferences).show(fragmentManager, RateDialog.FRAGMENT_TAG);
+    private fun showRateDialog(fragmentManager: FragmentManager) {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        if (!preferences.contains(IS_VOTED)) {
+            if (preferences.getLong(DAY_INSTALLATION, 0) < System.currentTimeMillis()) {
+                RateDialog(preferences).show(fragmentManager, RateDialog.FRAGMENT_TAG)
+            } else {
+                preferences.edit {
+                    putLong(DAY_INSTALLATION, System.currentTimeMillis() + 259200000L)
                 }
-            } else {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putLong(SettingsActivity.DAY_INSTALLATION, System.currentTimeMillis() + 259200000L);
-                editor.apply();
             }
         }
     }
 
-    private void initProgressDialog() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        getLifecycle().addObserver(progressDialog);
-        ViewModelProviders.of(this).get(ProgressModel.class).getShowProgress().observe(this, aBoolean -> {
-            if (aBoolean) {
-                progressDialog.show();
+    private fun initProgressDialog() {
+        val progressDialog = ProgressDialog(this)
+
+        viewModel.showProgress.observe(this) { isShowing ->
+            if (isShowing) {
+                progressDialog.show()
             } else {
-                progressDialog.dismiss();
+                progressDialog.dismiss()
             }
-        });
+        }
     }
 }

@@ -22,9 +22,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.belous.v.clrc.App;
 import com.belous.v.clrc.R;
 import com.belous.v.clrc.model.Item;
-import com.belous.v.clrc.other.ProgressModel;
+import com.belous.v.clrc.main.MainViewModel;
 import com.belous.v.clrc.presenter.ListPresenter;
-import com.belous.v.clrc.view.SettingsActivity;
 import com.belous.v.clrc.view.adapter.ItemsAdapter;
 import com.belous.v.clrc.view.dialog.ContextDialog;
 import com.belous.v.clrc.view.dialog.FoundDialog;
@@ -73,7 +72,7 @@ public class ListFragment extends BaseFragment implements ListView, SwipeRefresh
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 //        Log.d("MyLogs", "onActivityCreated");
-        listPresenter.onStart(this, ViewModelProviders.of(getActivity()).get(ProgressModel.class).getShowProgress());
+        listPresenter.onStart(this, ViewModelProviders.of(getActivity()).get(MainViewModel.class).getShowProgress());
     }
 
     @Override
