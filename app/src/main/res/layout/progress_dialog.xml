@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:gravity="start"
     android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="horizontal"
     android:padding="15dp">
 
     <ProgressBar
@@ -16,9 +16,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingStart="15dp"
-        android:paddingLeft="15dp"
         android:gravity="center"
+        android:paddingStart="15dp"
         android:text="@string/please_wait"
         tools:ignore="RtlSymmetry" />
+
 </LinearLayout>

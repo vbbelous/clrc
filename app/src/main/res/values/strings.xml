@@ -32,7 +32,6 @@
     <string name="close_button">No, Thanks</string>
     <string name="later_button">Remind me later</string>
     <string name="rate_button">Yes, Rate this application</string>
-
     <string name="cl_mode">Mode: </string>
     <string name="cl_temp">Temp: </string>
     <string name="moonlight">Moonlight</string>
@@ -45,9 +44,6 @@
     <string name="temp">Temp</string>
     <string name="off">Off</string>
     <style name="on">On</style>
-
     <string name="offline">offline</string>
-    <!--<string name="init_new">Initialize new</string>-->
-    <!--<string name="password">Password</string>-->
-    <!--<string name="init_success">Initialization successful\nRun a search on the local network</string>-->
+    <string name="error">Unknown error</string>
 </resources>

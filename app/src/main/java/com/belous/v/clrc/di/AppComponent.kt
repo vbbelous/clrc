@@ -1,9 +1,9 @@
 package com.belous.v.clrc.di
 
-import com.belous.v.clrc.view.dialog.BaseDialog
-import com.belous.v.clrc.view.dialog.FoundDialog
-import com.belous.v.clrc.view.fragment.InfoFragment
-import com.belous.v.clrc.view.fragment.ListFragment
+import com.belous.v.clrc.ui.feature_main.MainFragment
+import com.belous.v.clrc.ui.feature_yeelight.YeelightFragment
+import com.belous.v.clrc.MainActivity
+import com.belous.v.clrc.ui.dialog.FoundDialog
 import dagger.Component
 import javax.inject.Singleton
 
@@ -11,11 +11,11 @@ import javax.inject.Singleton
 @Component(modules = [AppModule::class])
 interface AppComponent {
 
+    fun inject(mainActivity: MainActivity)
+
     fun inject(foundDialog: FoundDialog)
 
-    fun inject(baseDialog: BaseDialog)
+    fun inject(mainFragment: MainFragment)
 
-    fun inject(listFragment: ListFragment)
-
-    fun inject(infoFragment: InfoFragment)
+    fun inject(yeelightFragment: YeelightFragment)
 }
