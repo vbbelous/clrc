@@ -2,7 +2,7 @@ package com.belous.v.clrc.core.data.db.entity
 
 import androidx.room.TypeConverter
 
-class YeelightConverter {
+class ParamsConverter {
     @TypeConverter
     fun fromParams(params: Map<String, String>): String {
         val stringBuilder = StringBuilder()

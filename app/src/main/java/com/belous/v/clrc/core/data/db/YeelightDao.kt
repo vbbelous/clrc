@@ -1,28 +1,28 @@
 package com.belous.v.clrc.core.data.db
 
 import androidx.room.*
-import com.belous.v.clrc.core.domain.Yeelight
+import com.belous.v.clrc.core.data.db.entity.YeelightEntity
 
 @Dao
 interface YeelightDao {
 
     @Query("SELECT * FROM Yeelight")
-    suspend fun getAll(): List<Yeelight>
+    suspend fun getAll(): List<YeelightEntity>
 
     @Query("SELECT * FROM Yeelight WHERE id = :id")
-    suspend fun getById(id: Int): Yeelight
+    suspend fun getById(id: Int): YeelightEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(Yeelight: Yeelight)
+    suspend fun insert(YeelightEntity: YeelightEntity)
 
     @Update
-    suspend fun update(Yeelight: Yeelight)
+    suspend fun update(YeelightEntity: YeelightEntity)
 
     @Update
-    suspend fun update(YeelightList: List<Yeelight>)
+    suspend fun update(yeelightEntityList: List<YeelightEntity>)
 
     @Delete
-    suspend fun delete(Yeelight: Yeelight)
+    suspend fun delete(YeelightEntity: YeelightEntity)
 
     @Query("DELETE FROM Yeelight WHERE id = :id")
     suspend fun deleteById(id: Int)

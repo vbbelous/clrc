@@ -30,7 +30,7 @@ class FoundDialog : DialogFragment() {
         editText?.setHint(R.string.write_name)
 
         val resultArray =
-            viewModel.foundYeelightList.value?.map { yeelight -> yeelight.name }
+            viewModel.foundYeelightEntityList.value?.map { yeelight -> yeelight.name }
                 ?.toTypedArray()
 
         var selectedYeelightIdx = 0
@@ -40,7 +40,7 @@ class FoundDialog : DialogFragment() {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
                     if (editText!!.text.isNotEmpty()) {
                         val yeelight =
-                            viewModel.foundYeelightList.value?.get(selectedYeelightIdx)
+                            viewModel.foundYeelightEntityList.value?.get(selectedYeelightIdx)
                         yeelight?.let {
                             viewModel.saveYeelight(it.copy(name = editText?.text.toString()))
                         }

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.belous.v.clrc.R
 import com.belous.v.clrc.core.domain.Yeelight
-import com.belous.v.clrc.core.domain.YeelightParams
 import com.belous.v.clrc.databinding.YeelightItemBinding
 import com.belous.v.clrc.ui.feature_main.YeelightListAdapter.YeelightItemHolder
 import java.util.*
@@ -46,30 +45,25 @@ class YeelightListAdapter(
 
         fun bind(yeelight: Yeelight) {
 
-            val isPower = yeelight.params[YeelightParams.POWER] == "on"
-            val isOnline = yeelight.params[YeelightParams.ONLINE] == "1"
-            val isActive = yeelight.params[YeelightParams.ACTIVE_MODE] == "1"
-
             val paramsVisible =
-                if (isPower && isOnline) View.VISIBLE
+                if (yeelight.isPower && yeelight.isOnline) View.VISIBLE
                 else View.INVISIBLE
 
             binding.power.setImageResource(
-                if (isOnline)
-                    if (isPower) R.drawable.power_on
+                if (yeelight.isOnline)
+                    if (yeelight.isPower) R.drawable.power_on
                     else R.drawable.power_off
                 else R.drawable.offline
             )
             binding.name.text = yeelight.name
-            binding.mode.setImageResource(if (isActive) R.drawable.moon else R.drawable.sun)
-            binding.currentState.text = if (isActive) yeelight.params[YeelightParams.NL_BR]
-            else yeelight.params[YeelightParams.BRIGHT]
+            binding.mode.setImageResource(if (yeelight.isActive) R.drawable.moon else R.drawable.sun)
+            binding.currentState.text = yeelight.bright.toString()
             binding.stepDown.visibility = paramsVisible
             binding.currentState.visibility = paramsVisible
             binding.stepUp.visibility = paramsVisible
 
             itemView.setOnClickListener { onClickAction(itemView.id, yeelightList[layoutPosition]) }
-            itemView.setOnLongClickListener { onLonClickAction(layoutPosition) }
+            itemView.setOnLongClickListener { onLonClickAction(yeelight.id) }
 
             binding.power.setOnClickListener {
                 onClickAction(

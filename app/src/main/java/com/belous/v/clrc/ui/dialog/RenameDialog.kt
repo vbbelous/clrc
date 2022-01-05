@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.createViewModelLazy
@@ -30,9 +29,8 @@ class RenameDialog : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            val position = it.getInt(ContextDialog.YEELIGHT_IDX)
-            yeelight = viewModel.loadedYeelightList.value?.get(position)
+        arguments?.getInt(ContextDialog.YEELIGHT_ID)?.let {
+            yeelight = viewModel.yeelightList.value?.firstOrNull { yeelight -> yeelight.id == it }
         }
     }
 
@@ -66,11 +64,12 @@ class RenameDialog : DialogFragment() {
             .setNegativeButton(getString(R.string.no)) { _, _ -> dismiss() }
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 if (editText?.text?.length ?: 0 > 0) {
-                    yeelight?.copy(name = editText?.text.toString())
-                        ?.let { viewModel.renameYeelight(it) }
+                    viewModel.renameYeelight(
+                        id = yeelight?.id ?: 0,
+                        name = editText?.text.toString()
+                    )
                 } else {
-                    Toast.makeText(context, getString(R.string.write_name), Toast.LENGTH_SHORT)
-                        .show()
+                    viewModel.showMessage(getString(R.string.write_name))
                 }
             }
             .create()

@@ -10,15 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
 import com.belous.v.clrc.appComponent
 import com.belous.v.clrc.core.data.db.YeelightDao
 import com.belous.v.clrc.databinding.MainFragmentBinding
-import com.belous.v.clrc.ui.feature_yeelight.YeelightFragment
-import com.belous.v.clrc.MainStates
-import com.belous.v.clrc.utils.ViewModelFactory
 import com.belous.v.clrc.ui.dialog.ContextDialog
 import com.belous.v.clrc.ui.dialog.FoundDialog
+import com.belous.v.clrc.ui.feature_yeelight.YeelightFragment
+import com.belous.v.clrc.utils.ViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
@@ -56,8 +56,8 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             onClickAction = { viewId, yeelight ->
                 viewModel.changeYeelightParam(viewId, yeelight)
             },
-            onLonClickAction = { position ->
-                showContextDialog(position)
+            onLonClickAction = { yeelightId ->
+                showContextDialog(yeelightId)
                 true
             })
         binding.clRecyclerView.adapter = yeelightListAdapter
@@ -80,7 +80,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             }
         }
 
-        viewModel.loadedYeelightList.observe(viewLifecycleOwner) { yeelightList ->
+        viewModel.yeelightList.observe(viewLifecycleOwner) { yeelightList ->
             yeelightListAdapter?.setData(yeelightList)
         }
     }
@@ -97,10 +97,10 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         return false
     }
 
-    private fun showContextDialog(position: Int) {
+    private fun showContextDialog(yeelightId: Int) {
         ContextDialog().apply {
             arguments = Bundle().apply {
-                putInt(ContextDialog.YEELIGHT_IDX, position)
+                putInt(ContextDialog.YEELIGHT_ID, yeelightId)
             }
         }.show(childFragmentManager, ContextDialog::class.java.simpleName)
     }

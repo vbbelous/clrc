@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
 import com.belous.v.clrc.core.data.db.YeelightDao
+import com.belous.v.clrc.core.data.db.entity.YeelightEntity
 import com.belous.v.clrc.core.data.net.YeelightSource
 import com.belous.v.clrc.core.domain.Yeelight
-import com.belous.v.clrc.core.domain.YeelightParams
-import com.belous.v.clrc.core.util.YeelightBuilder
+import com.belous.v.clrc.core.util.YeelightConvert
+import com.belous.v.clrc.core.util.YeelightEntityCreate
 import com.belous.v.clrc.utils.launch
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -23,12 +24,12 @@ class MainViewModel(
     private val _uiEventFlow = MutableSharedFlow<ListUiEvent>()
     val uiEventFlow = _uiEventFlow.asSharedFlow()
 
-    private val _loadedYeelightList = MutableLiveData<List<Yeelight>>()
-    val loadedYeelightList: LiveData<List<Yeelight>>
-        get() = _loadedYeelightList
+    private val _yeelightList = MutableLiveData<List<Yeelight>>()
+    val yeelightList: LiveData<List<Yeelight>>
+        get() = _yeelightList
 
-    private val _foundYeelightList = MutableLiveData<List<Yeelight>>()
-    val foundYeelightList: LiveData<List<Yeelight>>
+    private val _foundYeelightList = MutableLiveData<List<YeelightEntity>>()
+    val foundYeelightEntityList: LiveData<List<YeelightEntity>>
         get() = _foundYeelightList
 
     init {
@@ -40,7 +41,9 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            _loadedYeelightList.postValue(yeelightDao.getAll())
+            _yeelightList.postValue(yeelightDao.getAll()
+                .map { YeelightConvert(it) }
+                .sortedBy { it.name })
         }
     }
 
@@ -49,13 +52,11 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            val yeelightList = ArrayList<Yeelight>()
             yeelightDao.getAll().forEach { yeelight ->
                 val params = YeelightSource.getParams(yeelight.ip, yeelight.port)
-                yeelightList.add(yeelight.copy(params = yeelight.params.plus(params)))
+                yeelightDao.update(yeelight.copy(params = yeelight.params.plus(params)))
             }
-            yeelightDao.update(yeelightList)
-            _loadedYeelightList.postValue(yeelightList)
+            loadYeelightList()
         }
     }
 
@@ -65,7 +66,10 @@ class MainViewModel(
             eventFlow = mainStates.event
         ) {
             val deviceParamsList = YeelightSource.searchDevices()
-            val yeelightList = deviceParamsList.map { YeelightBuilder.build(it) }
+            val existingSerials = yeelightList.value?.map { it.serial } ?: emptyList()
+            val yeelightList = deviceParamsList
+                .map { YeelightEntityCreate(it) }
+                .filter { yeelightEntity -> !existingSerials.contains(yeelightEntity.serial) }
             _foundYeelightList.postValue(yeelightList)
             _uiEventFlow.emit(ListUiEvent.YeelightListFound)
         }
@@ -95,35 +99,34 @@ class MainViewModel(
 //        }
 //    }
 
-    fun saveYeelight(yeelight: Yeelight) {
+    fun saveYeelight(yeelightEntity: YeelightEntity) {
         launch(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            yeelightDao.insert(yeelight)
+            yeelightDao.insert(yeelightEntity)
             loadYeelightList()
         }
     }
 
-    fun renameYeelight(yeelight: Yeelight) {
+    fun renameYeelight(id: Int, name: String) {
         launch(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            yeelightDao.update(yeelight)
+            val yeelightEntity = yeelightDao.getById(id)
+            yeelightDao.update(yeelightEntity.copy(name = name))
             loadYeelightList()
         }
     }
 
-    fun deleteYeelight(position: Int) {
+    fun deleteYeelight(yeelightId: Int) {
         launch(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            loadedYeelightList.value?.get(position)?.let {
-                yeelightDao.delete(it)
-                loadYeelightList()
-            }
+            yeelightDao.deleteById(yeelightId)
+            loadYeelightList()
         }
     }
 
@@ -135,23 +138,20 @@ class MainViewModel(
             val args: Queue<String> = LinkedList()
             when (viewId) {
                 -1 -> {
-                    yeelight.id?.let {
+                    yeelight.id.let {
                         _uiEventFlow.emit(ListUiEvent.OpenYeelight(it))
                     }
                 }
                 R.id.power -> args.addAll(
                     listOf(
                         YeelightSource.SET_POWER,
-                        if (yeelight.params[YeelightParams.POWER] == "on") "\"off\"" else "\"on\"",
+                        if (yeelight.isPower) "\"off\"" else "\"on\"",
                         "\"smooth\"",
                         "500"
                     )
                 )
                 R.id.step_down -> {
-                    val isActive = yeelight.params[YeelightParams.ACTIVE_MODE] == "1"
-                    var downBright: Int =
-                        ((if (isActive) yeelight.params[YeelightParams.NL_BR]
-                        else yeelight.params[YeelightParams.BRIGHT])?.toInt() ?: 0) - 25
+                    var downBright: Int = yeelight.bright - 25
                     downBright = if (downBright <= 0) 1 else downBright
                     args.addAll(
                         listOf(
@@ -163,10 +163,7 @@ class MainViewModel(
                     )
                 }
                 R.id.step_up -> {
-                    val isActive = yeelight.params[YeelightParams.ACTIVE_MODE] == "1"
-                    var upBright: Int =
-                        ((if (isActive) yeelight.params[YeelightParams.NL_BR]
-                        else yeelight.params[YeelightParams.BRIGHT])?.toInt() ?: 0) + 25
+                    var upBright: Int = yeelight.bright + 25
                     upBright = if (upBright > 100) 100 else upBright
                     args.addAll(
                         listOf(
@@ -179,9 +176,14 @@ class MainViewModel(
                 }
             }
             val params = YeelightSource.setParams(yeelight.ip, yeelight.port, args)
-            yeelightDao.update(yeelight.copy(params = yeelight.params.plus(params)))
+            val yeelightEntity = yeelightDao.getById(yeelight.id)
+            yeelightDao.update(yeelightEntity.copy(params = yeelightEntity.params.plus(params)))
             loadYeelightList()
         }
+    }
+
+    fun showMessage(message: String) {
+        mainStates.showMessage(message)
     }
 
     sealed class ListUiEvent {

@@ -7,8 +7,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.createViewModelLazy
 import com.belous.v.clrc.R
+import com.belous.v.clrc.ui.dialog.ContextDialog.Companion.YEELIGHT_ID
 import com.belous.v.clrc.ui.feature_main.MainViewModel
-import com.belous.v.clrc.ui.dialog.ContextDialog.Companion.YEELIGHT_IDX
 
 class DeleteDialog : DialogFragment() {
 
@@ -17,12 +17,12 @@ class DeleteDialog : DialogFragment() {
         storeProducer = { requireParentFragment().viewModelStore }
     )
 
-    private var position: Int? = null
+    private var yeelightId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            position = it.getInt(YEELIGHT_IDX)
+            yeelightId = it.getInt(YEELIGHT_ID)
         }
     }
 
@@ -31,7 +31,7 @@ class DeleteDialog : DialogFragment() {
             .setTitle(getString(R.string.confirm_deletion))
             .setNegativeButton(getString(R.string.no), null)
             .setPositiveButton(getString(R.string.yes)) { _: DialogInterface?, _: Int ->
-                position?.let {
+                yeelightId?.let {
                     viewModel.deleteYeelight(it)
                 }
             }

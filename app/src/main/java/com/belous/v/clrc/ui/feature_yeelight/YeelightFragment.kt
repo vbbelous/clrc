@@ -10,7 +10,6 @@ import com.belous.v.clrc.R
 import com.belous.v.clrc.appComponent
 import com.belous.v.clrc.core.data.db.YeelightDao
 import com.belous.v.clrc.core.domain.Yeelight
-import com.belous.v.clrc.core.domain.YeelightParams
 import com.belous.v.clrc.databinding.YeelightFragmentBinding
 import com.belous.v.clrc.utils.ViewModelFactory
 import com.belous.v.clrc.utils.findChildren
@@ -65,12 +64,8 @@ class YeelightFragment : Fragment(R.layout.yeelight_fragment) {
 
     private fun showYeelightData(yeelight: Yeelight) {
 
-        val isPower = yeelight.params[YeelightParams.POWER] == "on"
-        val isOnline = yeelight.params[YeelightParams.ONLINE] == "1"
-        val isActive = yeelight.params[YeelightParams.ACTIVE_MODE] == "1"
-
         binding.powerChange.setTextColor(
-            if (isPower && isOnline) getColor(requireContext(), R.color.green)
+            if (yeelight.isPower && yeelight.isOnline) getColor(requireContext(), R.color.green)
             else getColor(requireContext(), R.color.red)
         )
 
@@ -78,28 +73,28 @@ class YeelightFragment : Fragment(R.layout.yeelight_fragment) {
             null, null, null,
             getDrawable(
                 requireContext(),
-                if (isActive) R.drawable.status_on else R.drawable.status_off
+                if (yeelight.isActive) R.drawable.status_on else R.drawable.status_off
             )
         )
         var brightText =
-            if (isPower)
-                if (isActive) yeelight.params[YeelightParams.NL_BR]
-                else yeelight.params[YeelightParams.BRIGHT] + "%"
-            else getString(R.string.off)
-        if (!isOnline) {
+            if (yeelight.isPower) "${yeelight.bright}%" else getString(R.string.off)
+        if (!yeelight.isOnline) {
             brightText = getString(R.string.offline)
         }
         binding.bright.text = brightText
         binding.mode.setCompoundDrawablesWithIntrinsicBounds(
             null,
             null,
-            getDrawable(requireContext(), if (isActive) R.drawable.moon else R.drawable.sun),
+            getDrawable(
+                requireContext(),
+                if (yeelight.isActive) R.drawable.moon else R.drawable.sun
+            ),
             null
         )
 
-        val yeelightCt = yeelight.params[YeelightParams.CT] ?: ""
+        val yeelightCt = yeelight.ct
         val tempText =
-            getString(R.string.cl_temp) + " " + (if (yeelightCt.isEmpty()) 3400 else yeelightCt) + "K"
+            getString(R.string.cl_temp) + " " + (if (yeelightCt == 0) 3400 else yeelightCt) + "K"
         binding.temp.text = tempText
     }
 }

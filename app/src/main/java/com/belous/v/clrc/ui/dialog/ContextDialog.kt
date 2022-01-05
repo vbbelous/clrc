@@ -10,7 +10,7 @@ import com.belous.v.clrc.R
 class ContextDialog : DialogFragment() {
 
     companion object {
-        const val YEELIGHT_IDX = "yeelight_idx"
+        const val YEELIGHT_ID = "yeelight_id"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
