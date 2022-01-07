@@ -3,6 +3,7 @@ package com.belous.v.clrc.ui.feature_main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
 import com.belous.v.clrc.data.db.entity.YeelightEntity
@@ -12,6 +13,8 @@ import com.belous.v.clrc.use_case.UseCases
 import com.belous.v.clrc.utils.launch
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.*
 
 class MainViewModel(
@@ -31,18 +34,12 @@ class MainViewModel(
         get() = _foundYeelightList
 
     init {
-        loadYeelightList()
-    }
-
-    private fun loadYeelightList() {
-        launch(
-            loadingState = mainStates.loadingState,
-            eventFlow = mainStates.event
-        ) {
-            _yeelightList.postValue(
-                useCases.getYeelightEntityList()
-                    .map { useCases.entityToYeelight(it) }
+        viewModelScope.launch {
+            useCases.getYeelightEntityList().collectLatest { yeelightEntityList ->
+                _yeelightList.postValue(yeelightEntityList
+                    .map { yeelightEntity -> useCases.entityToYeelight(yeelightEntity) }
                     .sortedBy { it.name })
+            }
         }
     }
 
@@ -51,11 +48,11 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            useCases.getYeelightEntityList().forEach { yeelightEntity ->
+            yeelightList.value?.forEach { yeelight ->
+                val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
                 val params = useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
                 useCases.updateYeelightEntity(yeelightEntity, params)
             }
-            loadYeelightList()
         }
     }
 
@@ -74,37 +71,12 @@ class MainViewModel(
         }
     }
 
-//    fun findYeelight() {
-//        viewModelScope.launch {
-//            val yeelightList = mutableListOf<Yeelight>()
-//            val stringList = listOf(
-//                "color_mode=2, sat=0, bright=20, rgb=0, ct=4000, name=, hue=0, model=ceiling2, id=0x0000000003b5a3f4, power=off, fw_ver=34, support=get_prop set_default set_power toggle set_bright set_scene cron_add cron_get cron_del start_cf stop_cf set_ct_abx set_name set_adjust adjust_bright adjust_ct, Location=yeelight://192.168.30.101:55443",
-//                "color_mode=2, sat=0, bright=20, rgb=0, ct=4389, name=, hue=0, model=ct_bulb, id=0x0000000005e7788b, power=off, fw_ver=35, support=get_prop set_default set_power toggle set_bright start_cf stop_cf set_scene cron_add cron_get cron_del set_ct_abx set_adjust adjust_bright adjust_ct set_music set_name, Location=yeelight://192.168.30.104:55443"
-//            )
-//            stringList.forEach { str ->
-//                val params = HashMap<String, String>()
-//                str.split(", ").forEach { j ->
-//                    val k = j.split("=")
-//                    if (k.size > 1) {
-//                        params[k[0]] = k[1]
-//                    } else {
-//                        params[k[0]] = ""
-//                    }
-//                }
-//                yeelightList.add(YeelightBuilder.build(params))
-//            }
-//            _foundYeelightList.postValue(yeelightList)
-//            _uiEventFlow.emit(ListUiEvent.YeelightListFound)
-//        }
-//    }
-
     fun saveYeelight(yeelightEntity: YeelightEntity) {
         launch(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
             useCases.insertYeelightEntity(yeelightEntity)
-            loadYeelightList()
         }
     }
 
@@ -115,7 +87,6 @@ class MainViewModel(
         ) {
             val yeelightEntity = useCases.getYeelightEntity(id)
             useCases.updateYeelightEntity(yeelightEntity.copy(name = name))
-            loadYeelightList()
         }
     }
 
@@ -125,7 +96,6 @@ class MainViewModel(
             eventFlow = mainStates.event
         ) {
             useCases.deleteYeelightEntity(yeelightId)
-            loadYeelightList()
         }
     }
 
@@ -177,7 +147,6 @@ class MainViewModel(
             val params = YeelightSource.setParams(yeelight.ip, yeelight.port, args)
             val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
             useCases.updateYeelightEntity(yeelightEntity, params)
-            loadYeelightList()
         }
     }
 

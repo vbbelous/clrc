@@ -2,12 +2,13 @@ package com.belous.v.clrc.data.db
 
 import androidx.room.*
 import com.belous.v.clrc.data.db.entity.YeelightEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface YeelightDao {
 
     @Query("SELECT * FROM Yeelight")
-    suspend fun getAll(): List<YeelightEntity>
+    fun getAll(): Flow<List<YeelightEntity>>
 
     @Query("SELECT * FROM Yeelight WHERE id = :id")
     suspend fun getById(id: Int): YeelightEntity
