@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.belous.v.clrc.R
-import com.belous.v.clrc.core.domain.Yeelight
+import com.belous.v.clrc.domain.Yeelight
 import com.belous.v.clrc.databinding.YeelightItemBinding
 import com.belous.v.clrc.ui.feature_main.YeelightListAdapter.YeelightItemHolder
 import java.util.*

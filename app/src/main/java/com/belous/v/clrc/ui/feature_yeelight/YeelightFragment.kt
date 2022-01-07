@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
 import com.belous.v.clrc.appComponent
-import com.belous.v.clrc.core.data.db.YeelightDao
-import com.belous.v.clrc.core.domain.Yeelight
 import com.belous.v.clrc.databinding.YeelightFragmentBinding
+import com.belous.v.clrc.domain.Yeelight
+import com.belous.v.clrc.use_case.UseCases
 import com.belous.v.clrc.utils.ViewModelFactory
 import com.belous.v.clrc.utils.findChildren
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class YeelightFragment : Fragment(R.layout.yeelight_fragment) {
     lateinit var mainStates: MainStates
 
     @Inject
-    lateinit var yeelightDao: YeelightDao
+    lateinit var useCases: UseCases
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +44,7 @@ class YeelightFragment : Fragment(R.layout.yeelight_fragment) {
             viewModel = ViewModelFactory(
                 yeelightId,
                 mainStates,
-                yeelightDao
+                useCases
             ).create(YeelightViewModel::class.java)
 
             viewModel?.yeelightData?.observe(viewLifecycleOwner) { yeelight ->

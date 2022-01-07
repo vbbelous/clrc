@@ -1,4 +1,4 @@
-package com.belous.v.clrc.core.domain
+package com.belous.v.clrc.domain
 
 object YeelightParams {
     const val POWER = "power"

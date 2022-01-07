@@ -1,4 +1,4 @@
-package com.belous.v.clrc.core.data.db.entity
+package com.belous.v.clrc.data.db.entity
 
 import androidx.room.TypeConverter
 

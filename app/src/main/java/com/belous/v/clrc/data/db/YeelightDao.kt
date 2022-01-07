@@ -1,7 +1,7 @@
-package com.belous.v.clrc.core.data.db
+package com.belous.v.clrc.data.db
 
 import androidx.room.*
-import com.belous.v.clrc.core.data.db.entity.YeelightEntity
+import com.belous.v.clrc.data.db.entity.YeelightEntity
 
 @Dao
 interface YeelightDao {

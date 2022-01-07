@@ -1,4 +1,4 @@
-package com.belous.v.clrc.core.data.net
+package com.belous.v.clrc.data.net
 
 import org.json.JSONObject
 import java.io.*
@@ -19,8 +19,8 @@ object YeelightSource {
     }
 
     private fun uDPResponse(): HashSet<String> {
-        val UDP_HOST = "239.255.255.250"
-        val UDP_PORT = 1982
+        val udpHost = "239.255.255.250"
+        val udpPort = 1982
         val message = "M-SEARCH * HTTP/1.1\r\n" +
             "HOST:239.255.255.250:1982\r\n" +
             "MAN:\"ssdp:discover\"\r\n" +
@@ -32,8 +32,8 @@ object YeelightSource {
             DatagramPacket(
                 message.toByteArray(),
                 message.toByteArray().size,
-                InetAddress.getByName(UDP_HOST),
-                UDP_PORT
+                InetAddress.getByName(udpHost),
+                udpPort
             )
         )
         val respList = HashSet<String>()
@@ -96,8 +96,9 @@ object YeelightSource {
                 params["online"] = "1"
             } catch (e: Exception) {
                 params["online"] = ""
+            } finally {
+                socket.close()
             }
-            socket.close()
         } catch (e: IOException) {
             params["online"] = ""
         }

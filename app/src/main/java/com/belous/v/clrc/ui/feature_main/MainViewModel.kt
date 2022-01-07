@@ -5,12 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
-import com.belous.v.clrc.core.data.db.YeelightDao
-import com.belous.v.clrc.core.data.db.entity.YeelightEntity
-import com.belous.v.clrc.core.data.net.YeelightSource
-import com.belous.v.clrc.core.domain.Yeelight
-import com.belous.v.clrc.core.util.YeelightConvert
-import com.belous.v.clrc.core.util.YeelightEntityCreate
+import com.belous.v.clrc.data.db.entity.YeelightEntity
+import com.belous.v.clrc.data.net.YeelightSource
+import com.belous.v.clrc.domain.Yeelight
+import com.belous.v.clrc.use_case.UseCases
 import com.belous.v.clrc.utils.launch
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,7 +16,7 @@ import java.util.*
 
 class MainViewModel(
     private val mainStates: MainStates,
-    private val yeelightDao: YeelightDao
+    private val useCases: UseCases
 ) : ViewModel() {
 
     private val _uiEventFlow = MutableSharedFlow<ListUiEvent>()
@@ -41,9 +39,10 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            _yeelightList.postValue(yeelightDao.getAll()
-                .map { YeelightConvert(it) }
-                .sortedBy { it.name })
+            _yeelightList.postValue(
+                useCases.getYeelightEntityList()
+                    .map { useCases.entityToYeelight(it) }
+                    .sortedBy { it.name })
         }
     }
 
@@ -52,9 +51,9 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            yeelightDao.getAll().forEach { yeelight ->
-                val params = YeelightSource.getParams(yeelight.ip, yeelight.port)
-                yeelightDao.update(yeelight.copy(params = yeelight.params.plus(params)))
+            useCases.getYeelightEntityList().forEach { yeelightEntity ->
+                val params = useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
+                useCases.updateYeelightEntity(yeelightEntity, params)
             }
             loadYeelightList()
         }
@@ -65,10 +64,10 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            val deviceParamsList = YeelightSource.searchDevices()
+            val deviceParamsList = useCases.findNewDevices()
             val existingSerials = yeelightList.value?.map { it.serial } ?: emptyList()
             val yeelightList = deviceParamsList
-                .map { YeelightEntityCreate(it) }
+                .map { useCases.paramsToEntity(it) }
                 .filter { yeelightEntity -> !existingSerials.contains(yeelightEntity.serial) }
             _foundYeelightList.postValue(yeelightList)
             _uiEventFlow.emit(ListUiEvent.YeelightListFound)
@@ -104,7 +103,7 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            yeelightDao.insert(yeelightEntity)
+            useCases.insertYeelightEntity(yeelightEntity)
             loadYeelightList()
         }
     }
@@ -114,8 +113,8 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            val yeelightEntity = yeelightDao.getById(id)
-            yeelightDao.update(yeelightEntity.copy(name = name))
+            val yeelightEntity = useCases.getYeelightEntity(id)
+            useCases.updateYeelightEntity(yeelightEntity.copy(name = name))
             loadYeelightList()
         }
     }
@@ -125,7 +124,7 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            yeelightDao.deleteById(yeelightId)
+            useCases.deleteYeelightEntity(yeelightId)
             loadYeelightList()
         }
     }
@@ -176,8 +175,8 @@ class MainViewModel(
                 }
             }
             val params = YeelightSource.setParams(yeelight.ip, yeelight.port, args)
-            val yeelightEntity = yeelightDao.getById(yeelight.id)
-            yeelightDao.update(yeelightEntity.copy(params = yeelightEntity.params.plus(params)))
+            val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
+            useCases.updateYeelightEntity(yeelightEntity, params)
             loadYeelightList()
         }
     }

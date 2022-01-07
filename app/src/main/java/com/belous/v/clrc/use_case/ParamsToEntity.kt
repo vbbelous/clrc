@@ -1,13 +1,11 @@
-package com.belous.v.clrc.core.util
+package com.belous.v.clrc.use_case
 
-import com.belous.v.clrc.core.data.db.entity.YeelightEntity
+import com.belous.v.clrc.data.db.entity.YeelightEntity
 
-object YeelightEntityCreate {
+class ParamsToEntity {
 
     operator fun invoke(params: Map<String, String>): YeelightEntity {
-
-        val yeelightParams = HashMap(params)
-        val location = yeelightParams["Location"]
+        val location = params["Location"]
         val address = location?.substring(location.indexOf("://") + 3)?.split(":")
         address?.let {
             val ip = it[0]
@@ -24,6 +22,6 @@ object YeelightEntityCreate {
                 params = params
             )
         }
-        throw IllegalStateException(this.javaClass.methods.last().name)
+        throw IllegalStateException(this.javaClass.simpleName)
     }
 }

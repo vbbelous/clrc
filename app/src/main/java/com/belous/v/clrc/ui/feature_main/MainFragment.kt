@@ -13,11 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.R
 import com.belous.v.clrc.appComponent
-import com.belous.v.clrc.core.data.db.YeelightDao
 import com.belous.v.clrc.databinding.MainFragmentBinding
 import com.belous.v.clrc.ui.dialog.ContextDialog
 import com.belous.v.clrc.ui.dialog.FoundDialog
 import com.belous.v.clrc.ui.feature_yeelight.YeelightFragment
+import com.belous.v.clrc.use_case.UseCases
 import com.belous.v.clrc.utils.ViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -32,10 +32,10 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     lateinit var mainStates: MainStates
 
     @Inject
-    lateinit var yeelightDao: YeelightDao
+    lateinit var useCases: UseCases
 
     private val viewModel by viewModels<MainViewModel>(factoryProducer = {
-        ViewModelFactory(mainStates, yeelightDao)
+        ViewModelFactory(mainStates, useCases)
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {

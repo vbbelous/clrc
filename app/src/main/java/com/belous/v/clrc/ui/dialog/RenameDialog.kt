@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.createViewModelLazy
 import com.belous.v.clrc.R
-import com.belous.v.clrc.core.domain.Yeelight
+import com.belous.v.clrc.domain.Yeelight
 import com.belous.v.clrc.ui.feature_main.MainViewModel
 
 class RenameDialog : DialogFragment() {

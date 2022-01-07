@@ -1,4 +1,4 @@
-package com.belous.v.clrc.core.domain
+package com.belous.v.clrc.domain
 
 data class Yeelight(
     val id: Int,

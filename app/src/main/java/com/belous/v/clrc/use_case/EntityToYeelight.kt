@@ -1,13 +1,12 @@
-package com.belous.v.clrc.core.util
+package com.belous.v.clrc.use_case
 
-import com.belous.v.clrc.core.data.db.entity.YeelightEntity
-import com.belous.v.clrc.core.domain.Yeelight
-import com.belous.v.clrc.core.domain.YeelightParams
+import com.belous.v.clrc.data.db.entity.YeelightEntity
+import com.belous.v.clrc.domain.Yeelight
+import com.belous.v.clrc.domain.YeelightParams
 
-object YeelightConvert {
+class EntityToYeelight {
 
     operator fun invoke(yeelightEntity: YeelightEntity): Yeelight {
-
         val params = yeelightEntity.params
         val isActive = params[YeelightParams.ACTIVE_MODE] == "1"
         return Yeelight(
@@ -21,7 +20,7 @@ object YeelightConvert {
             else params[YeelightParams.BRIGHT])?.toInt() ?: 0,
             ct = params[YeelightParams.CT]?.toInt() ?: 0,
             isActive = isActive,
-            isOnline = true,
+            isOnline = params[YeelightParams.ONLINE]?.isNotEmpty() ?: true,
             isPower = params[YeelightParams.POWER] == "on"
         )
     }
