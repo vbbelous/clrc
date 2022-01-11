@@ -1,4 +1,4 @@
-package com.belous.v.clrc.ui.dialog
+package com.belous.v.clrc.ui.component
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -7,7 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.createViewModelLazy
 import com.belous.v.clrc.R
-import com.belous.v.clrc.ui.dialog.ContextDialog.Companion.YEELIGHT_ID
+import com.belous.v.clrc.ui.component.ContextDialog.Companion.YEELIGHT_ID
 import com.belous.v.clrc.ui.feature_main.MainViewModel
 
 class DeleteDialog : DialogFragment() {

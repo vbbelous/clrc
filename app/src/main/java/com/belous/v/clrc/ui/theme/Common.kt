@@ -14,7 +14,7 @@ data class AppColors(
     val secondaryText: Color,
     val green: Color = Color(0xFF1B8A20),
     val red: Color = Color(0xFFFF0000),
-    val orange: Color = Color(0xFFDF691A)
+    val orange: Color = Color(0xFFE5A65B)
 )
 
 data class AppTypography(

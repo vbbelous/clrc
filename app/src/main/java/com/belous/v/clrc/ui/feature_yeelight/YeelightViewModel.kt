@@ -1,23 +1,26 @@
 package com.belous.v.clrc.ui.feature_yeelight
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.data.net.YeelightSource
 import com.belous.v.clrc.domain.Yeelight
+import com.belous.v.clrc.ui.Screen
 import com.belous.v.clrc.use_case.UseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class YeelightViewModel(
-    private val yeelightId: Int,
+@HiltViewModel
+class YeelightViewModel @Inject constructor(
     private val mainStates: MainStates,
-    private val useCases: UseCases
+    private val useCases: UseCases,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private var yeelightId: Int? = null
 
     private val _yeelightData = MutableLiveData<Yeelight>()
     val yeelightData: LiveData<Yeelight>
@@ -26,6 +29,8 @@ class YeelightViewModel(
     private val event = MutableSharedFlow<YeelightEvent>()
 
     init {
+        yeelightId = savedStateHandle.get<Int>(Screen.YeelightScreen.YEELIGHT_ID)
+
         viewModelScope.launch { loadYeelight() }
         viewModelScope.launch(Dispatchers.IO) {
             event.collectLatest { event ->
@@ -101,23 +106,27 @@ class YeelightViewModel(
     }
 
     private suspend fun loadYeelight() {
-        val yeelightEntity = useCases.getYeelightEntity(yeelightId)
-        val yeelight = useCases.entityToYeelight(yeelightEntity)
-        _yeelightData.postValue(yeelight)
+        yeelightId?.let {
+            val yeelightEntity = useCases.getYeelightEntity(it)
+            val yeelight = useCases.entityToYeelight(yeelightEntity)
+            _yeelightData.postValue(yeelight)
+        }
     }
 
     private suspend fun reloadYeelight() {
-        val yeelightEntity = useCases.getYeelightEntity(yeelightId)
-        val params =
-            useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
-        useCases.updateYeelightEntity(yeelightEntity, params)
-        loadYeelight()
+        yeelightId?.let {
+            val yeelightEntity = useCases.getYeelightEntity(it)
+            val params =
+                useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
+            useCases.updateYeelightEntity(yeelightEntity, params)
+            loadYeelight()
+        }
     }
 
     private suspend fun setParams(method: String, args: List<String>) {
         yeelightData.value?.let { yeelight ->
             val params = useCases.setYeelightParams(yeelight.ip, yeelight.port, method, args)
-            val yeelightEntity = useCases.getYeelightEntity(yeelightId)
+            val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
             useCases.updateYeelightEntity(yeelightEntity, params)
             loadYeelight()
         }

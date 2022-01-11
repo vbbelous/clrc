@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.belous.v.clrc.R
 import com.belous.v.clrc.ui.theme.AppTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -31,7 +32,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun YeelightScreen(
-    viewModel: YeelightViewModel
+    viewModel: YeelightViewModel = hiltViewModel()
 ) {
     val yeelight by viewModel.yeelightData.observeAsState()
 

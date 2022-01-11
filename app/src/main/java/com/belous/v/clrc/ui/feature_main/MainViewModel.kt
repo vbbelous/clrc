@@ -8,11 +8,14 @@ import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.data.db.entity.YeelightEntity
 import com.belous.v.clrc.data.net.YeelightSource
 import com.belous.v.clrc.use_case.UseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val mainStates: MainStates,
     private val useCases: UseCases
 ) : ViewModel() {

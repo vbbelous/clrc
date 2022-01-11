@@ -22,15 +22,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.belous.v.clrc.R
+import com.belous.v.clrc.ui.Screen
 import com.belous.v.clrc.ui.theme.AppTheme
+import com.belous.v.clrc.utils.Logging
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel
+    navController: NavController,
+    viewModel: MainViewModel = hiltViewModel()
 ) {
 
     val yeelightList by viewModel.yeelightList.collectAsState(initial = emptyList())
@@ -39,7 +44,9 @@ fun MainScreen(
     LaunchedEffect(key1 = Unit) {
         viewModel.uiEvent.collectLatest { event ->
             when (event) {
-                is MainViewModel.MainUiEvent.YeelightFound -> {}
+                is MainViewModel.MainUiEvent.YeelightFound -> {
+                    Logging(event.toString())
+                }
             }
         }
     }
@@ -47,6 +54,7 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.height(AppTheme.dimensions.itemHeight),
                 backgroundColor = AppTheme.colors.itemBg
             ) {
                 Image(
@@ -86,7 +94,7 @@ fun MainScreen(
                                 .fillMaxWidth()
                                 .height(AppTheme.dimensions.itemHeight)
                                 .background(AppTheme.colors.itemBg)
-                                .clickable { /*TODO*/ }
+                                .clickable { navController.navigate(Screen.YeelightScreen(yeelight.id).route) }
                         ) {
                             MainButton(modifier = Modifier.fillMaxHeight(),
                                 onClickAction = {
@@ -192,6 +200,17 @@ fun MainScreen(
                         }
                     }
                 }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                backgroundColor = AppTheme.colors.orange,
+                contentColor = AppTheme.colors.primaryText,
+                onClick = { viewModel.sendEvent(MainViewModel.MainEvent.Find) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(id = R.string.find_on_lan)
+                )
             }
         }
     )

@@ -1,4 +1,4 @@
-package com.belous.v.clrc.ui.dialog
+package com.belous.v.clrc.ui.component
 
 import android.app.Dialog
 import android.content.Context

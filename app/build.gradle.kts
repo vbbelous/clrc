@@ -4,7 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
-//    id("dagger.hilt.android.plugin")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -66,21 +66,17 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+    implementation("androidx.navigation:navigation-compose:2.4.0-rc01")
 
     val accompanistVersion = "0.20.3"
     implementation("com.google.accompanist:accompanist-swiperefresh:$accompanistVersion")
 
-    val daggerVersion = "2.38.1"
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
-
-//  Dagger - Hilt
-//    val hiltVersion = "2.38.1"
-//    implementation("com.google.dagger:hilt-android:${hiltVersion}")
-//    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
-//    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-rc01")
-//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-//    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    val hiltVersion = "2.38.1"
+    implementation("com.google.dagger:hilt-android:${hiltVersion}")
+    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-rc01")
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     val roomVersion = "2.4.0"
     implementation("androidx.room:room-runtime:$roomVersion")
