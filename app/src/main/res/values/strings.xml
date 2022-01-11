@@ -46,4 +46,6 @@
     <style name="on">On</style>
     <string name="offline">offline</string>
     <string name="error">Unknown error</string>
+    <string name="night_mode">Night mode</string>
+    <string name="light_mode">Light mode</string>
 </resources>

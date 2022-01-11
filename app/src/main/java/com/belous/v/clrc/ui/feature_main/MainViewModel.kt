@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.*
 
 class MainViewModel(
     private val mainStates: MainStates,
@@ -104,47 +103,44 @@ class MainViewModel(
             loadingState = mainStates.loadingState,
             eventFlow = mainStates.event
         ) {
-            val args: Queue<String> = LinkedList()
+            var method = ""
+            var args = emptyList<String>()
             when (viewId) {
                 -1 -> {
                     yeelight.id.let {
                         _uiEventFlow.emit(ListUiEvent.OpenYeelight(it))
                     }
                 }
-                R.id.power -> args.addAll(
-                    listOf(
-                        YeelightSource.SET_POWER,
+                R.id.power -> {
+                    method = YeelightSource.SET_POWER
+                    args = listOf(
                         if (yeelight.isPower) "\"off\"" else "\"on\"",
                         "\"smooth\"",
                         "500"
                     )
-                )
+                }
                 R.id.step_down -> {
                     var downBright: Int = yeelight.bright - 25
                     downBright = if (downBright <= 0) 1 else downBright
-                    args.addAll(
-                        listOf(
-                            YeelightSource.SET_BRIGHT,
-                            downBright.toString(),
-                            "\"smooth\"",
-                            "500"
-                        )
+                    method = YeelightSource.SET_BRIGHT
+                    args = listOf(
+                        downBright.toString(),
+                        "\"smooth\"",
+                        "500"
                     )
                 }
                 R.id.step_up -> {
                     var upBright: Int = yeelight.bright + 25
                     upBright = if (upBright > 100) 100 else upBright
-                    args.addAll(
-                        listOf(
-                            YeelightSource.SET_BRIGHT,
-                            upBright.toString(),
-                            "\"smooth\"",
-                            "500"
-                        )
+                    method = YeelightSource.SET_BRIGHT
+                    args = listOf(
+                        upBright.toString(),
+                        "\"smooth\"",
+                        "500"
                     )
                 }
             }
-            val params = YeelightSource.setParams(yeelight.ip, yeelight.port, args)
+            val params = YeelightSource.setParams(yeelight.ip, yeelight.port, method, args)
             val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
             useCases.updateYeelightEntity(yeelightEntity, params)
         }

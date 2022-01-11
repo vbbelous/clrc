@@ -112,7 +112,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             }
         }
         parentFragmentManager.commit {
-            add(R.id.main_layout, fragment, null)
+            replace(R.id.main_layout, fragment, null)
             addToBackStack(null)
         }
     }

@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
+//    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         applicationId = "com.belous.v.clrc"
         minSdk = 21
         targetSdk = 31
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "2.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -36,10 +37,17 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.0-rc01"
+    }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${KotlinCompilerVersion.VERSION}")
 
     implementation("androidx.appcompat:appcompat:1.4.0")
@@ -53,9 +61,26 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
+    val composeVersion = "1.1.0-rc01"
+    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+
+    val accompanistVersion = "0.20.3"
+    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanistVersion")
+
     val daggerVersion = "2.38.1"
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+
+//  Dagger - Hilt
+//    val hiltVersion = "2.38.1"
+//    implementation("com.google.dagger:hilt-android:${hiltVersion}")
+//    kapt("com.google.dagger:hilt-android-compiler:${hiltVersion}")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-rc01")
+//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+//    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     val roomVersion = "2.4.0"
     implementation("androidx.room:room-runtime:$roomVersion")
