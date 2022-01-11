@@ -17,23 +17,39 @@ val appTypography = AppTypography(
         fontSize = 18.sp,
         fontWeight = FontWeight.Normal
     ),
+    mediumSemiBold = TextStyle(
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold
+    ),
     mediumBold = TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold
     ),
     largeNormal = TextStyle(
-        fontSize = 32.sp,
+        fontSize = 24.sp,
         fontWeight = FontWeight.Normal
     ),
+    largeSemiBold = TextStyle(
+        fontSize = 24.sp,
+        fontWeight = FontWeight.SemiBold
+    ),
     largeBold = TextStyle(
-        fontSize = 32.sp,
+        fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     ),
     xLargeNormal = TextStyle(
-        fontSize = 48.sp,
+        fontSize = 32.sp,
         fontWeight = FontWeight.Normal
     ),
     xLargeBold = TextStyle(
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold
+    ),
+    xxLargeNormal = TextStyle(
+        fontSize = 48.sp,
+        fontWeight = FontWeight.Normal
+    ),
+    xxLargeBold = TextStyle(
         fontSize = 48.sp,
         fontWeight = FontWeight.Bold
     )

@@ -32,7 +32,7 @@ class DeleteDialog : DialogFragment() {
             .setNegativeButton(getString(R.string.no), null)
             .setPositiveButton(getString(R.string.yes)) { _: DialogInterface?, _: Int ->
                 yeelightId?.let {
-                    viewModel.deleteYeelight(it)
+//                    viewModel.deleteYeelight(it)
                 }
             }
             .create()

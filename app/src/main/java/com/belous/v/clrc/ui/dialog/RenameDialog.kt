@@ -30,7 +30,7 @@ class RenameDialog : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.getInt(ContextDialog.YEELIGHT_ID)?.let {
-            yeelight = viewModel.yeelightList.value?.firstOrNull { yeelight -> yeelight.id == it }
+//            yeelight = viewModel.yeelightList.value?.firstOrNull { yeelight -> yeelight.id == it }
         }
     }
 
@@ -64,10 +64,10 @@ class RenameDialog : DialogFragment() {
             .setNegativeButton(getString(R.string.no)) { _, _ -> dismiss() }
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 if (editText?.text?.length ?: 0 > 0) {
-                    viewModel.renameYeelight(
-                        id = yeelight?.id ?: 0,
-                        name = editText?.text.toString()
-                    )
+//                    viewModel.renameYeelight(
+//                        id = yeelight?.id ?: 0,
+//                        name = editText?.text.toString()
+//                    )
                 } else {
                     viewModel.showMessage(getString(R.string.write_name))
                 }

@@ -48,4 +48,6 @@
     <string name="error">Unknown error</string>
     <string name="night_mode">Night mode</string>
     <string name="light_mode">Light mode</string>
+    <string name="logo">Logo</string>
+    <string name="refresh">Refresh</string>
 </resources>

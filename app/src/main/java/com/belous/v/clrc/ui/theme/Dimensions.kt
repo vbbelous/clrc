@@ -10,4 +10,5 @@ val appDimensions = AppDimensions(
     large = 12.dp,
     xLarge = 18.dp,
     xxLarge = 24.dp,
+    itemHeight = 62.dp
 )

@@ -42,7 +42,7 @@ class FoundDialog : DialogFragment() {
                         val yeelight =
                             viewModel.foundYeelightEntityList.value?.get(selectedYeelightIdx)
                         yeelight?.let {
-                            viewModel.saveYeelight(it.copy(name = editText?.text.toString()))
+//                            viewModel.saveYeelight(it.copy(name = editText?.text.toString()))
                         }
                     } else {
                         Toast.makeText(

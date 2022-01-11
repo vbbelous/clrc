@@ -21,11 +21,15 @@ data class AppTypography(
     val smallNormal: TextStyle,
     val smallBold: TextStyle,
     val mediumNormal: TextStyle,
+    val mediumSemiBold: TextStyle,
     val mediumBold: TextStyle,
     val largeNormal: TextStyle,
+    val largeSemiBold: TextStyle,
     val largeBold: TextStyle,
     val xLargeNormal: TextStyle,
     val xLargeBold: TextStyle,
+    val xxLargeNormal: TextStyle,
+    val xxLargeBold: TextStyle,
 )
 
 data class AppDimensions(
@@ -35,7 +39,8 @@ data class AppDimensions(
     val medium: Dp,
     val large: Dp,
     val xLarge: Dp,
-    val xxLarge: Dp
+    val xxLarge: Dp,
+    val itemHeight: Dp
 )
 
 val LocalAppColors = staticCompositionLocalOf<AppColors> {
