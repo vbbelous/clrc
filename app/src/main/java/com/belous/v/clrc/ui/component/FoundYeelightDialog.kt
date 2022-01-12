@@ -107,7 +107,8 @@ fun FoundYeelightDialog(
                         focusedLabelColor = AppTheme.colors.secondaryText,
                         focusedBorderColor = AppTheme.colors.disabledText,
                         unfocusedBorderColor = AppTheme.colors.itemBg,
-                        cursorColor = AppTheme.colors.disabledText
+                        cursorColor = AppTheme.colors.disabledText,
+                        textColor = AppTheme.colors.primaryText
                     ),
                     textStyle = AppTheme.typography.mediumNormal,
                     label = { Text(text = stringResource(id = R.string.name)) },

@@ -38,7 +38,7 @@ fun ConfirmDialog(
                     },
                     color = AppTheme.colors.primaryText,
                     textAlign = TextAlign.Center,
-                    style = AppTheme.typography.largeSemiBold,
+                    style = AppTheme.typography.mediumSemiBold,
                     modifier = Modifier
                         .fillMaxWidth()
                 )

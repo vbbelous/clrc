@@ -40,7 +40,7 @@ fun RenameDialog(
                     text = stringResource(id = R.string.change_name),
                     color = AppTheme.colors.primaryText,
                     textAlign = TextAlign.Center,
-                    style = AppTheme.typography.largeSemiBold,
+                    style = AppTheme.typography.mediumSemiBold,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -53,7 +53,8 @@ fun RenameDialog(
                         focusedLabelColor = AppTheme.colors.secondaryText,
                         focusedBorderColor = AppTheme.colors.disabledText,
                         unfocusedBorderColor = AppTheme.colors.itemBg,
-                        cursorColor = AppTheme.colors.disabledText
+                        cursorColor = AppTheme.colors.disabledText,
+                        textColor = AppTheme.colors.primaryText
                     ),
                     textStyle = AppTheme.typography.mediumNormal,
                     label = { Text(text = stringResource(id = R.string.name)) },

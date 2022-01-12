@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -112,7 +113,7 @@ fun MainScreen(
                                         else AppTheme.colors.red
                                     } else AppTheme.colors.secondaryText,
                                     modifier = Modifier
-                                        .padding(vertical = AppTheme.dimensions.medium)
+                                        .padding(vertical = AppTheme.dimensions.large)
                                         .align(Alignment.CenterVertically)
                                         .scale(1.4f)
                                 )
@@ -127,8 +128,10 @@ fun MainScreen(
                                     text = yeelight.name,
                                     color = AppTheme.colors.primaryText,
                                     style = AppTheme.typography.largeSemiBold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.align(Alignment.CenterVertically),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Icon(
                                     imageVector = if (yeelight.isActive) Icons.Outlined.DarkMode
