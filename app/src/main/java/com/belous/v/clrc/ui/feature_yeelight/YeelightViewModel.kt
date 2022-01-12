@@ -8,6 +8,7 @@ import com.belous.v.clrc.ui.Screen
 import com.belous.v.clrc.use_case.UseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -24,6 +25,7 @@ class YeelightViewModel @Inject constructor(
 
     private val yeelightId = savedStateHandle.get<Int>(Screen.YeelightScreen.YEELIGHT_ID)
     private val yeelightEntityFlow = yeelightId?.let { useCases.getYeelightEntity(it) }
+    private var yeelightFlowJob: Job? = null
 
     private val _yeelightData = MutableLiveData<Yeelight>()
     val yeelightData: LiveData<Yeelight>
@@ -32,7 +34,7 @@ class YeelightViewModel @Inject constructor(
     private val event = MutableSharedFlow<YeelightEvent>()
 
     init {
-        viewModelScope.launch {
+        yeelightFlowJob = viewModelScope.launch {
             yeelightEntityFlow?.let {
                 it.map { yeelightEntity ->
                     useCases.entityToYeelight(yeelightEntity)
@@ -131,6 +133,7 @@ class YeelightViewModel @Inject constructor(
     }
 
     private suspend fun deleteYeelight() {
+        yeelightFlowJob?.cancel()
         yeelightId?.let {
             useCases.deleteYeelightEntity(it)
         }
