@@ -1,37 +1,42 @@
 package com.belous.v.clrc.ui.feature_yeelight
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.belous.v.clrc.R
+import com.belous.v.clrc.ui.component.ConfirmDialog
+import com.belous.v.clrc.ui.component.RenameDialog
 import com.belous.v.clrc.ui.theme.AppTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun YeelightScreen(
+    navController: NavController,
     viewModel: YeelightViewModel = hiltViewModel()
 ) {
     val yeelight by viewModel.yeelightData.observeAsState()
@@ -39,6 +44,22 @@ fun YeelightScreen(
     val isActive = yeelight?.isActive == true
     val isOnline = yeelight?.isOnline == true
     val isPower = yeelight?.isPower == true
+
+    val deleteDialogState = remember { mutableStateOf(false) }
+    val renameDialogState = remember { mutableStateOf(false) }
+
+    if (deleteDialogState.value) {
+        ConfirmDialog(dialogState = deleteDialogState) {
+            viewModel.sendEvent(YeelightViewModel.YeelightEvent.Delete)
+            navController.popBackStack()
+        }
+    }
+
+    if (renameDialogState.value) {
+        RenameDialog(dialogState = renameDialogState, yeelight?.name ?: "") {
+            viewModel.sendEvent(YeelightViewModel.YeelightEvent.Rename(it))
+        }
+    }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing = false),
@@ -50,27 +71,126 @@ fun YeelightScreen(
                 .verticalScroll(rememberScrollState())
                 .background(AppTheme.colors.itemBg)
         ) {
-            Box(
+
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(AppTheme.dimensions.xLarge)
             ) {
-                Text(
-                    text = if (isOnline) {
-                        if (isPower) "${yeelight?.bright}%"
-                        else stringResource(id = R.string.off)
-                    } else stringResource(id = R.string.offline),
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    color = AppTheme.colors.primaryText,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = if (isOnline) 124.sp else 64.sp
+                Row(modifier = Modifier.fillMaxWidth()) {
+
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = AppTheme.colors.itemBg,
+                            disabledBackgroundColor = AppTheme.colors.itemBg,
+                            contentColor = AppTheme.colors.primaryText,
+                            disabledContentColor = AppTheme.colors.disabledText
+                        ),
+                        elevation = ButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = -AppTheme.dimensions.small
+                        ),
+                        onClick = { renameDialogState.value = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = stringResource(id = R.string.delete),
+                            tint = AppTheme.colors.secondaryText,
+                            modifier = Modifier.padding(vertical = AppTheme.dimensions.medium)
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(top = AppTheme.dimensions.medium),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${yeelight?.name}",
+                            style = AppTheme.typography.mediumNormal,
+                            color = AppTheme.colors.primaryText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = "${yeelight?.ip}:${yeelight?.port}",
+                            style = AppTheme.typography.smallNormal,
+                            color = AppTheme.colors.secondaryText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = AppTheme.colors.itemBg,
+                            disabledBackgroundColor = AppTheme.colors.itemBg,
+                            contentColor = AppTheme.colors.primaryText,
+                            disabledContentColor = AppTheme.colors.disabledText
+                        ),
+                        elevation = ButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = -AppTheme.dimensions.small
+                        ),
+                        onClick = { deleteDialogState.value = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.DeleteOutline,
+                            contentDescription = stringResource(id = R.string.delete),
+                            tint = AppTheme.colors.secondaryText,
+                            modifier = Modifier.padding(vertical = AppTheme.dimensions.medium)
+                        )
+                    }
+                }
+
+                Divider(
+                    modifier = Modifier.padding(
+                        vertical = AppTheme.dimensions.small,
+                        horizontal = AppTheme.dimensions.xLarge
+                    ),
+                    thickness = 0.2.dp,
+                    color = AppTheme.colors.secondaryText
                 )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (isOnline && isPower) {
+                        Text(
+                            text = if (isPower) "${yeelight?.bright}%"
+                            else stringResource(id = R.string.off),
+                            color = AppTheme.colors.primaryText,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = if (isOnline) 124.sp else 64.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Image(
+                            imageVector = if (!isOnline) Icons.Outlined.LinkOff
+                            else Icons.Outlined.PowerSettingsNew,
+                            modifier = Modifier.size(128.dp),
+                            contentDescription = stringResource(id = R.string.offline),
+                            colorFilter = ColorFilter.tint(AppTheme.colors.disabledText),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = if (!isOnline) stringResource(id = R.string.offline)
+                            else stringResource(id = R.string.off),
+                            color = AppTheme.colors.secondaryText,
+                            style = AppTheme.typography.mediumNormal,
+                            letterSpacing = 0.54.sp
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
+                        .padding(AppTheme.dimensions.xLarge)
                         .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
                 ) {
                     Text(
                         text = "${stringResource(id = R.string.cl_temp)} ${yeelight?.ct ?: 4200}K",

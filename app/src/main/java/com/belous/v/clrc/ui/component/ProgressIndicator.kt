@@ -21,7 +21,7 @@ fun ProgressIndicator(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.itemBg.copy(alpha = 0.33f))
+                .background(AppTheme.colors.itemBg.copy(alpha = 0.23f))
                 .focusable(true)
                 .selectable(selected = true, enabled = false) {},
             contentAlignment = Alignment.TopCenter

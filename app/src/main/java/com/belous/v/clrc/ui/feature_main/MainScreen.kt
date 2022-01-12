@@ -11,10 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -26,8 +23,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.belous.v.clrc.R
 import com.belous.v.clrc.ui.Screen
+import com.belous.v.clrc.ui.component.FoundYeelightDialog
 import com.belous.v.clrc.ui.theme.AppTheme
-import com.belous.v.clrc.utils.Logging
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.collectLatest
@@ -41,11 +38,13 @@ fun MainScreen(
     val yeelightList by viewModel.yeelightList.collectAsState(initial = emptyList())
     val listState = rememberLazyListState()
 
+    val foundDevicesDialogState = remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = Unit) {
         viewModel.uiEvent.collectLatest { event ->
             when (event) {
                 is MainViewModel.MainUiEvent.YeelightFound -> {
-                    Logging(event.toString())
+                    foundDevicesDialogState.value = true
                 }
             }
         }
@@ -214,6 +213,14 @@ fun MainScreen(
             }
         }
     )
+
+    if (foundDevicesDialogState.value) {
+        FoundYeelightDialog(
+            dialogTitle = stringResource(id = R.string.add_new_device),
+            dialogState = foundDevicesDialogState,
+            yeelightEntityList = viewModel.foundYeelightEntityList
+        ) { viewModel.sendEvent(MainViewModel.MainEvent.Save(it)) }
+    }
 }
 
 @Composable

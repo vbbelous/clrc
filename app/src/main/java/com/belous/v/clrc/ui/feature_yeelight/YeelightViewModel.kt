@@ -38,6 +38,8 @@ class YeelightViewModel @Inject constructor(
                     mainStates.loadingState.emit(true)
                     when (event) {
                         is YeelightEvent.Update -> reloadYeelight()
+                        is YeelightEvent.Rename -> renameYeelight(event.name)
+                        is YeelightEvent.Delete -> deleteYeelight()
                         is YeelightEvent.Power -> setParams(
                             YeelightSource.SET_POWER,
                             listOf(
@@ -97,7 +99,7 @@ class YeelightViewModel @Inject constructor(
                         }
                     }
                 } catch (e: Exception) {
-                    mainStates.event.emit(MainStates.Event.MessageEvent(e.message.toString()))
+                    mainStates.eventState.emit(MainStates.EventState.ExceptionEvent(e))
                 } finally {
                     mainStates.loadingState.emit(false)
                 }
@@ -123,6 +125,19 @@ class YeelightViewModel @Inject constructor(
         }
     }
 
+    private suspend fun renameYeelight(name: String) {
+        yeelightId?.let {
+            val yeelightEntity = useCases.getYeelightEntity(it)
+            useCases.updateYeelightEntity(yeelightEntity.copy(name = name))
+        }
+    }
+
+    private suspend fun deleteYeelight() {
+        yeelightId?.let {
+            useCases.deleteYeelightEntity(it)
+        }
+    }
+
     private suspend fun setParams(method: String, args: List<String>) {
         yeelightData.value?.let { yeelight ->
             val params = useCases.setYeelightParams(yeelight.ip, yeelight.port, method, args)
@@ -138,6 +153,8 @@ class YeelightViewModel @Inject constructor(
 
     sealed class YeelightEvent {
         object Update : YeelightEvent()
+        class Rename(val name: String) : YeelightEvent()
+        object Delete : YeelightEvent()
         object Power : YeelightEvent()
         object Moonlight : YeelightEvent()
         object BrightPlus : YeelightEvent()

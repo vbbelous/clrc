@@ -1,10 +1,9 @@
 package com.belous.v.clrc.ui.feature_main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.belous.v.clrc.MainStates
+import com.belous.v.clrc.R
 import com.belous.v.clrc.data.db.entity.YeelightEntity
 import com.belous.v.clrc.data.net.YeelightSource
 import com.belous.v.clrc.use_case.UseCases
@@ -32,8 +31,8 @@ class MainViewModel @Inject constructor(
             .sortedBy { yeelight -> yeelight.name }
     }
 
-    private val _foundYeelightList = MutableLiveData<List<YeelightEntity>>()
-    val foundYeelightEntityList: LiveData<List<YeelightEntity>>
+    private val _foundYeelightList = mutableListOf<YeelightEntity>()
+    val foundYeelightEntityList: List<YeelightEntity>
         get() = _foundYeelightList
 
     init {
@@ -45,14 +44,12 @@ class MainViewModel @Inject constructor(
                         is MainEvent.Find -> findYeelight()
                         is MainEvent.UpdateAll -> reloadYeelightList()
                         is MainEvent.Save -> saveYeelight(event.yeelightEntity)
-                        is MainEvent.Rename -> renameYeelight(event.id, event.name)
-                        is MainEvent.Delete -> deleteYeelight(event.id)
                         is MainEvent.Power -> changePower(event.id, event.isPower)
                         is MainEvent.BrightPlus -> increaseBrightness(event.id, event.bright)
                         is MainEvent.BrightMinus -> decreaseBrightness(event.id, event.bright)
                     }
                 } catch (e: Exception) {
-                    mainStates.showMessage(e.message.toString())
+                    mainStates.eventState.emit(MainStates.EventState.ExceptionEvent(e))
                 } finally {
                     mainStates.loadingState.emit(false)
                 }
@@ -68,26 +65,22 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun findYeelight() {
+        _foundYeelightList.clear()
         val deviceParamsList = useCases.findNewDevices()
         val existingSerials = yeelightEntityList.first().map { it.serial }
         val yeelightList = deviceParamsList
             .map { useCases.paramsToEntity(it) }
             .filter { yeelightEntity -> !existingSerials.contains(yeelightEntity.serial) }
-        _foundYeelightList.postValue(yeelightList)
-        _uiEvent.emit(MainUiEvent.YeelightFound)
+        if (yeelightList.isNotEmpty()) {
+            _foundYeelightList.addAll(yeelightList)
+            _uiEvent.emit(MainUiEvent.YeelightFound)
+        } else {
+            mainStates.eventState.emit(MainStates.EventState.MessageEvent(R.string.device_not_found))
+        }
     }
 
     private suspend fun saveYeelight(yeelightEntity: YeelightEntity) {
         useCases.insertYeelightEntity(yeelightEntity)
-    }
-
-    private suspend fun renameYeelight(id: Int, name: String) {
-        val yeelightEntity = useCases.getYeelightEntity(id)
-        useCases.updateYeelightEntity(yeelightEntity.copy(name = name))
-    }
-
-    private suspend fun deleteYeelight(yeelightId: Int) {
-        useCases.deleteYeelightEntity(yeelightId)
     }
 
     private suspend fun changePower(yeelightId: Int, isPower: Boolean) {
@@ -119,10 +112,6 @@ class MainViewModel @Inject constructor(
         useCases.updateYeelightEntity(yeelightEntity, params)
     }
 
-    fun showMessage(message: String) {
-        mainStates.showMessage(message)
-    }
-
     sealed class MainUiEvent {
         object YeelightFound : MainUiEvent()
     }
@@ -135,8 +124,6 @@ class MainViewModel @Inject constructor(
         object Find : MainEvent()
         object UpdateAll : MainEvent()
         class Save(val yeelightEntity: YeelightEntity) : MainEvent()
-        class Rename(val id: Int, val name: String) : MainEvent()
-        class Delete(val id: Int) : MainEvent()
         class Power(val id: Int, val isPower: Boolean) : MainEvent()
         class BrightPlus(val id: Int, val bright: Int) : MainEvent()
         class BrightMinus(val id: Int, val bright: Int) : MainEvent()

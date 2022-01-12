@@ -12,6 +12,7 @@ data class AppColors(
     val dividerBg: Color,
     val primaryText: Color,
     val secondaryText: Color,
+    val disabledText: Color,
     val green: Color = Color(0xFF1B8A20),
     val red: Color = Color(0xFFFF0000),
     val orange: Color = Color(0xFFE5A65B)
