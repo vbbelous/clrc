@@ -105,15 +105,19 @@ object YeelightSource {
         return params
     }
 
-    fun setParams(ip: String, port: Int, args: Queue<String>): HashMap<String, String> {
+    fun setParams(
+        ip: String,
+        port: Int,
+        method: String,
+        args: List<String>
+    ): HashMap<String, String> {
         var params = HashMap<String, String>()
         try {
             val socket = Socket()
             socket.connect(InetSocketAddress(ip, port), TIME_OUT)
             try {
                 socket.soTimeout = TIME_OUT
-                val message =
-                    "{\"id\":1,\"method\":\"" + args.poll() + "\",\"params\":" + args.toString() + "}\r\n"
+                val message = "{\"id\":1,\"method\":\"$method\",\"params\":$args}\r\n"
                 val bufferedWriter = BufferedWriter(OutputStreamWriter(socket.getOutputStream()))
                 bufferedWriter.write(message)
                 bufferedWriter.flush()

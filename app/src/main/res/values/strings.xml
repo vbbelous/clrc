@@ -8,7 +8,6 @@
     <string name="buy">Buy</string>
     <string name="exit">Exit</string>
     <string name="please_wait">Please wait&#8230;</string>
-    <string name="confirm_deletion">Confirm the deletion</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="power">Power</string>
@@ -18,9 +17,9 @@
     <string name="add_more_device">Add more than one device</string>
     <string name="device_not_found">Device not found, please try again later.</string>
     <string name="save">Save</string>
-    <string name="write_name">write name</string>
+    <string name="name">Name</string>
     <string name="select_item">Select item</string>
-    <string name="rename">rename</string>
+    <string name="change_name">Change name</string>
     <string name="delete">delete</string>
     <string name="access_allowed">Access allowed, please try again.</string>
     <string name="access_denied">Access denied</string>
@@ -36,14 +35,18 @@
     <string name="cl_temp">Temp: </string>
     <string name="moonlight">Moonlight</string>
     <string name="bright">Bright</string>
-    <string name="bright_1" translatable="false">1%</string>
-    <string name="bright_25" translatable="false">25%</string>
-    <string name="bright_50" translatable="false">50%</string>
-    <string name="bright_75" translatable="false">75%</string>
-    <string name="bright_100" translatable="false">100%</string>
     <string name="temp">Temp</string>
     <string name="off">Off</string>
     <style name="on">On</style>
-    <string name="offline">offline</string>
+    <string name="offline">Offline</string>
     <string name="error">Unknown error</string>
+    <string name="night_mode">Night mode</string>
+    <string name="light_mode">Light mode</string>
+    <string name="logo">Logo</string>
+    <string name="refresh">Refresh</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_new_device">Add new device</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="ok">OK</string>
+    <string name="unexpected_error">Unexpected error</string>
 </resources>

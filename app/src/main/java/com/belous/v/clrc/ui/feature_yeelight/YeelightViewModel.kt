@@ -1,140 +1,167 @@
 package com.belous.v.clrc.ui.feature_yeelight
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.belous.v.clrc.MainStates
 import com.belous.v.clrc.data.net.YeelightSource
 import com.belous.v.clrc.domain.Yeelight
+import com.belous.v.clrc.ui.Screen
 import com.belous.v.clrc.use_case.UseCases
-import com.belous.v.clrc.utils.launch
-import java.util.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class YeelightViewModel(
-    private val yeelightId: Int,
+@HiltViewModel
+class YeelightViewModel @Inject constructor(
     private val mainStates: MainStates,
-    private val useCases: UseCases
+    private val useCases: UseCases,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val yeelightId = savedStateHandle.get<Int>(Screen.YeelightScreen.YEELIGHT_ID)
+    private val yeelightEntityFlow = yeelightId?.let { useCases.getYeelightEntity(it) }
+    private var yeelightFlowJob: Job? = null
 
     private val _yeelightData = MutableLiveData<Yeelight>()
     val yeelightData: LiveData<Yeelight>
         get() = _yeelightData
 
+    private val event = MutableSharedFlow<YeelightEvent>()
+
     init {
-        loadYeelight()
-    }
-
-    private fun loadYeelight() {
-        launch(
-            loadingState = mainStates.loadingState,
-            eventFlow = mainStates.event
-        ) {
-            val yeelightEntity = useCases.getYeelightEntity(yeelightId)
-            val yeelight = useCases.entityToYeelight(yeelightEntity)
-            _yeelightData.postValue(yeelight)
-        }
-    }
-
-    fun reloadYeelight() {
-        launch(
-            loadingState = mainStates.loadingState,
-            eventFlow = mainStates.event
-        ) {
-            val yeelightEntity = useCases.getYeelightEntity(yeelightId)
-            val params =
-                useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
-            useCases.updateYeelightEntity(yeelightEntity, params)
-            loadYeelight()
-        }
-    }
-
-    fun onSetParams(viewId: Int) {
-        yeelightData.value?.let { yeelight ->
-            launch(
-                loadingState = mainStates.loadingState,
-                eventFlow = mainStates.event
-            ) {
-                val args: Queue<String> = LinkedList()
-
-                when (viewId) {
-                    ViewIds.POWER_CHANGE -> args.addAll(
-                        listOf(
-                            YeelightSource.SET_POWER,
-                            (if (yeelight.isPower) "\"off\"" else "\"on\""),
-                            "\"smooth\"",
-                            "500"
-                        )
-                    )
-                    ViewIds.MODE_CHANGE -> args.addAll(
-                        listOf(
-                            YeelightSource.SET_POWER,
-                            (if (yeelight.isPower) "\"on\"" else "\"off\""),
-                            "\"smooth\"",
-                            "500",
-                            (if (yeelight.isActive) "1" else "5")
-                        )
-                    )
-                    ViewIds.BRIGHT_DOWN -> {
-                        var downBright = yeelight.bright - 25
-                        downBright = if (downBright <= 0) 1 else downBright
-                        args.addAll(
-                            listOf(
-                                YeelightSource.SET_BRIGHT,
-                                downBright.toString(),
-                                "\"smooth\"",
-                                "500"
-                            )
-                        )
-                    }
-                    ViewIds.BRIGHT_UP -> {
-                        var upBright = yeelight.bright + 25
-                        upBright = if (upBright > 100) 100 else upBright
-                        args.addAll(
-                            listOf(
-                                YeelightSource.SET_BRIGHT, upBright.toString(), "\"smooth\"", "500"
-                            )
-                        )
-                    }
-                    ViewIds.BRIGHT_1 ->
-                        args.addAll(listOf(YeelightSource.SET_BRIGHT, "1", "\"smooth\"", "500"))
-                    ViewIds.BRIGHT_25 ->
-                        args.addAll(listOf(YeelightSource.SET_BRIGHT, "25", "\"smooth\"", "500"))
-                    ViewIds.BRIGHT_50 ->
-                        args.addAll(listOf(YeelightSource.SET_BRIGHT, "50", "\"smooth\"", "500"))
-                    ViewIds.BRIGHT_75 ->
-                        args.addAll(listOf(YeelightSource.SET_BRIGHT, "75", "\"smooth\"", "500"))
-                    ViewIds.BRIGHT_100 ->
-                        args.addAll(listOf(YeelightSource.SET_BRIGHT, "100", "\"smooth\"", "500"))
-
-                    ViewIds.TEMP_DOWN -> {
-                        var downTemp = yeelight.ct - 500
-                        downTemp = if (downTemp <= 2700) 2700 else downTemp
-                        args.addAll(
-                            listOf(
-                                YeelightSource.SET_CT_ABX,
-                                downTemp.toString(),
-                                "\"smooth\"",
-                                "500"
-                            )
-                        )
-                    }
-                    ViewIds.TEMP_UP -> {
-                        var upTemp = yeelight.ct + 500
-                        upTemp = if (upTemp > 6500) 6500 else upTemp
-                        args.addAll(
-                            listOf(
-                                YeelightSource.SET_CT_ABX, upTemp.toString(), "\"smooth\"", "500"
-                            )
-                        )
-                    }
-                    else -> {}
+        yeelightFlowJob = viewModelScope.launch {
+            yeelightEntityFlow?.let {
+                it.map { yeelightEntity ->
+                    useCases.entityToYeelight(yeelightEntity)
+                }.collectLatest { yeelight ->
+                    _yeelightData.postValue(yeelight)
                 }
-
-                val params = useCases.setYeelightParams(yeelight.ip, yeelight.port, args)
-                val yeelightEntity = useCases.getYeelightEntity(yeelightId)
-                useCases.updateYeelightEntity(yeelightEntity, params)
-                loadYeelight()
             }
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            event.collectLatest { event ->
+                try {
+                    mainStates.loadingState.emit(true)
+                    when (event) {
+                        is YeelightEvent.Update -> reloadYeelight()
+                        is YeelightEvent.Rename -> renameYeelight(event.name)
+                        is YeelightEvent.Delete -> deleteYeelight()
+                        is YeelightEvent.Power -> setParams(
+                            YeelightSource.SET_POWER,
+                            listOf(
+                                if (yeelightData.value?.isPower == true) "\"off\"" else "\"on\"",
+                                "\"smooth\"",
+                                "500"
+                            )
+                        )
+                        is YeelightEvent.Moonlight -> {
+                            setParams(
+                                YeelightSource.SET_POWER,
+                                listOf(
+                                    if (yeelightData.value?.isPower == true) "\"on\"" else "\"off\"",
+                                    "\"smooth\"",
+                                    "500",
+                                    (if (yeelightData.value?.isActive == true) "1" else "5")
+                                )
+                            )
+                        }
+                        is YeelightEvent.BrightMinus -> {
+                            var downBright = (yeelightData.value?.bright ?: 0) - 25
+                            downBright = if (downBright <= 0) 1 else downBright
+                            setParams(
+                                YeelightSource.SET_BRIGHT,
+                                listOf(downBright.toString(), "\"smooth\"", "500")
+                            )
+                        }
+                        is YeelightEvent.BrightPlus -> {
+                            var upBright = (yeelightData.value?.bright ?: 0) + 25
+                            upBright = if (upBright > 100) 100 else upBright
+                            setParams(
+                                YeelightSource.SET_BRIGHT,
+                                listOf(upBright.toString(), "\"smooth\"", "500")
+                            )
+                        }
+                        is YeelightEvent.ChangeBright -> {
+                            setParams(
+                                YeelightSource.SET_BRIGHT,
+                                listOf(event.bright.toString(), "\"smooth\"", "500")
+                            )
+                        }
+                        is YeelightEvent.TempMinus -> {
+                            var downTemp = (yeelightData.value?.ct ?: 4200) - 500
+                            downTemp = if (downTemp <= 2700) 2700 else downTemp
+                            setParams(
+                                YeelightSource.SET_CT_ABX,
+                                listOf(downTemp.toString(), "\"smooth\"", "500")
+                            )
+                        }
+                        is YeelightEvent.TempPlus -> {
+                            var upTemp = (yeelightData.value?.ct ?: 4200) + 500
+                            upTemp = if (upTemp > 6500) 6500 else upTemp
+                            setParams(
+                                YeelightSource.SET_CT_ABX,
+                                listOf(upTemp.toString(), "\"smooth\"", "500")
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    mainStates.eventState.emit(MainStates.EventState.ExceptionEvent(e))
+                } finally {
+                    mainStates.loadingState.emit(false)
+                }
+            }
+        }
+    }
+
+    private suspend fun reloadYeelight() {
+        yeelightEntityFlow?.first()?.let {
+            val params = useCases.getYeelightParams(it.ip, it.port)
+            useCases.updateYeelightEntity(it, params)
+        }
+    }
+
+    private suspend fun renameYeelight(name: String) {
+        yeelightEntityFlow?.first()?.let {
+            useCases.updateYeelightEntity(it.copy(name = name))
+        }
+    }
+
+    private suspend fun deleteYeelight() {
+        yeelightFlowJob?.cancel()
+        yeelightId?.let {
+            useCases.deleteYeelightEntity(it)
+        }
+    }
+
+    private suspend fun setParams(method: String, args: List<String>) {
+        val yeelightEntity = yeelightEntityFlow?.first()
+        yeelightEntity?.let {
+            val params =
+                useCases.setYeelightParams(it.ip, it.port, method, args)
+            useCases.updateYeelightEntity(it, params)
+        }
+    }
+
+    fun sendEvent(yeelightEvent: YeelightEvent) {
+        viewModelScope.launch { event.emit(yeelightEvent) }
+    }
+
+    sealed class YeelightEvent {
+        object Update : YeelightEvent()
+        class Rename(val name: String) : YeelightEvent()
+        object Delete : YeelightEvent()
+        object Power : YeelightEvent()
+        object Moonlight : YeelightEvent()
+        object BrightPlus : YeelightEvent()
+        object BrightMinus : YeelightEvent()
+        class ChangeBright(val bright: Int) : YeelightEvent()
+        object TempPlus : YeelightEvent()
+        object TempMinus : YeelightEvent()
     }
 }
