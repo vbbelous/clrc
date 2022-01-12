@@ -10,6 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +22,8 @@ class YeelightViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var yeelightId: Int? = null
+    private val yeelightId = savedStateHandle.get<Int>(Screen.YeelightScreen.YEELIGHT_ID)
+    private val yeelightEntityFlow = yeelightId?.let { useCases.getYeelightEntity(it) }
 
     private val _yeelightData = MutableLiveData<Yeelight>()
     val yeelightData: LiveData<Yeelight>
@@ -29,9 +32,16 @@ class YeelightViewModel @Inject constructor(
     private val event = MutableSharedFlow<YeelightEvent>()
 
     init {
-        yeelightId = savedStateHandle.get<Int>(Screen.YeelightScreen.YEELIGHT_ID)
+        viewModelScope.launch {
+            yeelightEntityFlow?.let {
+                it.map { yeelightEntity ->
+                    useCases.entityToYeelight(yeelightEntity)
+                }.collectLatest { yeelight ->
+                    _yeelightData.postValue(yeelight)
+                }
+            }
+        }
 
-        viewModelScope.launch { loadYeelight() }
         viewModelScope.launch(Dispatchers.IO) {
             event.collectLatest { event ->
                 try {
@@ -107,28 +117,16 @@ class YeelightViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadYeelight() {
-        yeelightId?.let {
-            val yeelightEntity = useCases.getYeelightEntity(it)
-            val yeelight = useCases.entityToYeelight(yeelightEntity)
-            _yeelightData.postValue(yeelight)
-        }
-    }
-
     private suspend fun reloadYeelight() {
-        yeelightId?.let {
-            val yeelightEntity = useCases.getYeelightEntity(it)
-            val params =
-                useCases.getYeelightParams(yeelightEntity.ip, yeelightEntity.port)
-            useCases.updateYeelightEntity(yeelightEntity, params)
-            loadYeelight()
+        yeelightEntityFlow?.first()?.let {
+            val params = useCases.getYeelightParams(it.ip, it.port)
+            useCases.updateYeelightEntity(it, params)
         }
     }
 
     private suspend fun renameYeelight(name: String) {
-        yeelightId?.let {
-            val yeelightEntity = useCases.getYeelightEntity(it)
-            useCases.updateYeelightEntity(yeelightEntity.copy(name = name))
+        yeelightEntityFlow?.first()?.let {
+            useCases.updateYeelightEntity(it.copy(name = name))
         }
     }
 
@@ -139,11 +137,11 @@ class YeelightViewModel @Inject constructor(
     }
 
     private suspend fun setParams(method: String, args: List<String>) {
-        yeelightData.value?.let { yeelight ->
-            val params = useCases.setYeelightParams(yeelight.ip, yeelight.port, method, args)
-            val yeelightEntity = useCases.getYeelightEntity(yeelight.id)
-            useCases.updateYeelightEntity(yeelightEntity, params)
-            loadYeelight()
+        val yeelightEntity = yeelightEntityFlow?.first()
+        yeelightEntity?.let {
+            val params =
+                useCases.setYeelightParams(it.ip, it.port, method, args)
+            useCases.updateYeelightEntity(it, params)
         }
     }
 

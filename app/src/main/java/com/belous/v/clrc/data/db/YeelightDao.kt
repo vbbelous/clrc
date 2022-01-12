@@ -11,7 +11,7 @@ interface YeelightDao {
     fun getAll(): Flow<List<YeelightEntity>>
 
     @Query("SELECT * FROM Yeelight WHERE id = :id")
-    suspend fun getById(id: Int): YeelightEntity
+    fun getById(id: Int): Flow<YeelightEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(YeelightEntity: YeelightEntity)
