@@ -95,7 +95,7 @@ object YeelightSource {
                 }
                 params["online"] = "1"
             } catch (e: Exception) {
-                params["online"] = ""
+                throw IllegalStateException(e.message)
             } finally {
                 socket.close()
             }
@@ -137,7 +137,7 @@ object YeelightSource {
                 }
                 params["online"] = "1"
             } catch (e: Exception) {
-                params["online"] = ""
+                throw IllegalStateException(e.message)
             }
             socket.close()
         } catch (e: IOException) {
