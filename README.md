@@ -1,12 +1,9 @@
 CLRC
 Ceiling Light Remote Control
-version: 0.1
+version: 2.1
 
 <img src="https://github.com/vbbelous/clrc/blob/master/app/src/main/res/mipmap-xxxhdpi/logo.png"></img>
 
 Universal application to control your ceiling light through the wifi network.
 
-Checked work:
-- Yeelight
-
-<img src="https://github.com/vbbelous/clrc/blob/master/img_1.JPEG"/> <img src="https://github.com/vbbelous/clrc/blob/master/img_2.JPEG"/>
+<img src="https://github.com/vbbelous/clrc/blob/master/main_screen.png"/> <img src="https://github.com/vbbelous/clrc/blob/master/yeelight_screen.png"/>
