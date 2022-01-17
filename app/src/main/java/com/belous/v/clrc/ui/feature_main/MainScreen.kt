@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,12 +60,18 @@ fun MainScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.mipmap.logo),
-                    contentDescription = stringResource(id = R.string.logo)
+                    contentDescription = stringResource(id = R.string.logo),
+                    colorFilter = ColorFilter.tint(AppTheme.colors.secondaryText)
                 )
-                Spacer(
+                Text(
+                    text = stringResource(id = R.string.ceiling_light_remote_control),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
+                    color = AppTheme.colors.primaryText,
+                    style = AppTheme.typography.mediumNormal,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
                 )
                 MainButton(
                     modifier = Modifier.fillMaxHeight(),
@@ -207,7 +214,7 @@ fun MainScreen(
         floatingActionButton = {
             FloatingActionButton(
                 backgroundColor = AppTheme.colors.orange,
-                contentColor = AppTheme.colors.primaryText,
+                contentColor = AppTheme.colors.mainBg,
                 onClick = { viewModel.sendEvent(MainViewModel.MainEvent.Find) }) {
                 Icon(
                     imageVector = Icons.Outlined.Add,
