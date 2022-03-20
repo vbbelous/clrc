@@ -10,15 +10,15 @@ class EntityToYeelight {
         val params = yeelightEntity.params
         val isActive = params[YeelightParams.ACTIVE_MODE] == "1"
         return Yeelight(
-            id = yeelightEntity.id ?: 0,
+            id = yeelightEntity.id,
             name = yeelightEntity.name,
             model = yeelightEntity.model,
             serial = yeelightEntity.serial,
             ip = yeelightEntity.ip,
             port = yeelightEntity.port,
             bright = (if (isActive) params[YeelightParams.NL_BR]
-            else params[YeelightParams.BRIGHT])?.toInt() ?: 0,
-            ct = params[YeelightParams.CT]?.toInt() ?: 0,
+            else params[YeelightParams.BRIGHT])?.toIntOrNull() ?: 0,
+            ct = params[YeelightParams.CT]?.toIntOrNull() ?: 0,
             isActive = isActive,
             isOnline = params[YeelightParams.ONLINE]?.isNotEmpty() ?: true,
             isPower = params[YeelightParams.POWER] == "on"
